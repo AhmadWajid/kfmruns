@@ -185,21 +185,6 @@ To change the admin password:
 1. Connect your GitHub repository to Vercel
 2. Set environment variables in Vercel dashboard
 3. Deploy automatically on push
-
-### Other Platforms
-- **Netlify**: Use serverless functions
-- **Railway**: Full-stack deployment
-- **Self-hosted**: Docker + VPS
-
-## 📊 Key Metrics
-
-The admin dashboard provides:
-- Total drivers and riders
-- Match success rate
-- Unmatched riders count
-- Real-time updates
-- Manual override capabilities
-
 ## 🔮 Future Enhancements
 
 ### Potential Features
