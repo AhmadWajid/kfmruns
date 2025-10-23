@@ -1,65 +1,95 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { Car, Users, MapPin, Clock, Star, Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-bg-primary text-text-primary">
+      {/* Hero Section */}
+      <div className="flex flex-col grow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-bg-primary">
+        <div className="text-center mb-16">
+          <div className="text-6xl mb-6">🕌</div>
+          <h1 className="text-4xl md:text-6xl font-bold text-text-primary mb-6">
+            <span className="text-msa-blue">السلام عليكم ورحمة الله وبركاته</span>
+            <br />
+            <span className="text-2xl md:text-3xl text-text-primary">Peace be upon you and the mercy of Allah and His blessings</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <h2 className="text-3xl md:text-4xl font-bold text-msa-blue mb-6">
+            Join Us for Isha Prayer in Congregation
+          </h2>
+          <p className="text-xl text-text-primary mb-8 max-w-4xl mx-auto">
+            This platform was created to help facilitate rides for the brothers to attend Jama'ah Isha prayers every Thursday at King Fahad Mosque in Culver City for the 2025-2026 school year.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/driver">
+              <Button size="lg" className="w-full sm:w-auto bg-msa-blue hover:bg-blue-800 text-white">
+                <Car className="mr-2 h-5 w-5" />
+                Offer a Ride
+              </Button>
+            </Link>
+            <Link href="/rider">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-msa-blue text-msa-blue hover:bg-msa-blue hover:text-white">
+                <Users className="mr-2 h-5 w-5" />
+                Request a Ride
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Islamic Quotes Cards */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="bg-gray-800 rounded-lg border-l-4 border-msa-yellow p-6 hover:shadow-lg transition-shadow">
+            <p className="text-white italic text-lg mb-4">
+              "The prayer in congregation is twenty-seven times superior to the prayer offered by a person alone."
+            </p>
+            <p className="text-msa-yellow font-bold">— Sahih Bukhari 645</p>
+          </div>
+
+          <div className="bg-gray-800 rounded-lg border-l-4 border-msa-yellow p-6 hover:shadow-lg transition-shadow">
+            <p className="text-white italic text-lg mb-4 text-right" dir="rtl">
+              وَأَقِيمُوا۟ ٱلصَّلَوٰةَ وَءَاتُوا۟ ٱلزَّكَوٰةَ وَٱرْكَعُوا۟ مَعَ ٱلرَّٰكِعِينَ
+            </p>
+            <p className="text-white italic text-lg mb-4">
+              "And establish prayer and give zakah and bow with those who bow [in worship and obedience]."
+            </p>
+            <p className="text-msa-yellow font-bold">— Quran 2:43</p>
+          </div>
+
+          <div className="bg-gray-800 rounded-lg border-l-4 border-msa-yellow p-6 hover:shadow-lg transition-shadow">
+            <p className="text-white italic text-lg mb-4">
+              "Whoever goes to the mosque in the morning or evening, Allah will prepare for him a feast in Paradise whenever he goes in the morning or evening."
+            </p>
+            <p className="text-msa-yellow font-bold">— Sahih Bukhari 662</p>
+          </div>
+        </div>
+
+
+        {/* Islamic Blessing */}
+        <div className="text-center mt-16 p-8 bg-msa-blue rounded-lg text-text-secondary">
+          <h2 className="text-2xl font-bold mb-4">بارك الله فيكم</h2>
+          <p className="text-lg opacity-90">May Allah bless you</p>
+          <p className="mt-4 text-sm opacity-75">
+            Thank you for participating in our community ride-sharing program for Thursday Isha prayers. 
+            May Allah reward you for your service to the community and grant you the rewards of congregational prayer.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
         </div>
-      </main>
+      </div>
+
+      {/* Simple Footer */}
+      <footer className="bg-msa-blue text-text-secondary py-6 px-5 text-center">
+        <div className="space-y-2">
+          <p className="text-lg">📍 Destination: King Fahad Mosque, 10980 Washington Blvd, Culver City, CA 90232</p>
+          <p className="text-lg">🕐 Every Thursday Evening</p>
+        </div>
+      </footer>
     </div>
   );
 }

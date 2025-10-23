@@ -3,24 +3,139 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: #ffffff;
+  --color-foreground: #171717;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Light mode is default, dark mode is optional */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --color-background: #0a0a0a;
+    --color-foreground: #ededed;
   }
+}
+
+/* Force light mode for admin page */
+.admin-light-mode {
+  --background: #ffffff !important;
+  --foreground: #171717 !important;
+  --color-background: #ffffff !important;
+  --color-foreground: #171717 !important;
+}
+
+.admin-light-mode * {
+  color-scheme: light !important;
+}
+
+/* Ensure Select dropdowns appear above modals */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}
+
+[data-radix-select-content] {
+  z-index: 9999 !important;
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-radix-select-item] {
+  background-color: white !important;
+  color: #374151 !important;
+}
+
+[data-radix-select-item]:hover {
+  background-color: #f3f4f6 !important;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* MSA UCLA Color Scheme - Light Mode Primary */
+:root {
+  --msa-blue: #1e3a8a;
+  --msa-yellow: #fbbf24;
+  --text-secondary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #1f2937;
+  --bg-primary: #ffffff;
+  
+  /* Form and UI Variables */
+  --background: #ffffff;
+  --foreground: #1f2937;
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
+  --primary: #1e3a8a;
+  --primary-foreground: #ffffff;
+  --secondary: #f8fafc;
+  --secondary-foreground: #1f2937;
+  --muted: #f8fafc;
+  --muted-foreground: #6b7280;
+  --accent: #f8fafc;
+  --accent-foreground: #1f2937;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #1e3a8a;
+}
+
+/* MSA UCLA Custom Classes */
+.bg-msa-blue {
+  background-color: var(--msa-blue);
+}
+
+.text-msa-blue {
+  color: var(--msa-blue);
+}
+
+.bg-msa-yellow {
+  background-color: var(--msa-yellow);
+}
+
+.text-msa-yellow {
+  color: var(--msa-yellow);
+}
+
+.text-text-secondary {
+  color: var(--text-secondary);
+}
+
+.bg-bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.text-text-primary {
+  color: var(--text-primary);
+}
+
+.bg-bg-primary {
+  background-color: var(--bg-primary);
+}
+
+/* Material Icons */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
 }
