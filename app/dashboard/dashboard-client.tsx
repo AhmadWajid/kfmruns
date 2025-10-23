@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DashboardData } from '@/types/api';
-import { formatPhoneNumber, formatTimePreference, getTimePreferenceColor } from '@/lib/utils';
+import { formatPhoneNumber, formatTimePreference, getTimePreferenceColor, getPickupAreaMapsUrl } from '@/lib/utils';
 import { getDashboardData } from '@/lib/actions/dashboard';
 
 interface DashboardClientProps {
@@ -88,10 +88,30 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                         <Car className={`h-4 w-4 ${match.riders.length > 0 ? 'text-green-600' : 'text-blue-600'}`} />
                         <span className="font-medium text-gray-900">{match.driver.name}</span>
                         <span className="hidden sm:inline text-sm text-gray-600">•</span>
-                        <span className="hidden sm:inline text-sm text-gray-600">{match.driver.pickup_area}</span>
+                        <div className="hidden sm:flex items-center space-x-1">
+                          <span className="text-sm text-gray-600">{match.driver.pickup_area}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(getPickupAreaMapsUrl(match.driver.pickup_area), '_blank')}
+                            className="h-4 w-4 p-0 text-blue-600 hover:bg-blue-100"
+                          >
+                            <MapPin className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                       <div className="flex items-center justify-between sm:justify-end space-x-2">
-                        <span className="text-sm text-gray-600 sm:hidden">{match.driver.pickup_area}</span>
+                        <div className="flex items-center space-x-1 sm:hidden">
+                          <span className="text-sm text-gray-600">{match.driver.pickup_area}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(getPickupAreaMapsUrl(match.driver.pickup_area), '_blank')}
+                            className="h-4 w-4 p-0 text-blue-600 hover:bg-blue-100"
+                          >
+                            <MapPin className="h-3 w-3" />
+                          </Button>
+                        </div>
                         <Badge variant="outline" className={`text-xs ${match.riders.length > 0 ? "text-green-700 border-green-300" : "text-blue-700 border-blue-300"}`}>
                           {match.remaining_seats} seats
                         </Badge>
@@ -160,7 +180,17 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                           <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
                             <span className="font-medium">{formatPhoneNumber(rider.phone_number)}</span>
                             <span className="hidden sm:inline">•</span>
-                            <span>{rider.pickup_area}</span>
+                            <div className="flex items-center space-x-1">
+                              <span>{rider.pickup_area}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
+                                className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                              >
+                                <MapPin className="h-2 w-2" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>

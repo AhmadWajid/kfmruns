@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Car, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Car, ArrowLeft, CheckCircle, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { PICKUP_AREAS, TIME_PREFERENCES } from '@/types/api';
 import { createDriver } from '@/lib/actions/drivers';
+import { getDestinationMapsUrl, getPickupAreaMapsUrl } from '@/lib/utils';
 
 export default function DriverPage() {
   const router = useRouter();
@@ -109,14 +110,25 @@ export default function DriverPage() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Destination Info */}
         <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
-          <div className="flex items-start space-x-3">
-            <span className="text-2xl">📍</span>
-            <div>
-              <h2 className="font-semibold text-gray-900">Destination: King Fahad Mosque</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                10980 Washington Blvd, Culver City, CA 90232
-              </p>
+          <div className="flex items-start justify-between">
+            <div className="flex items-start space-x-3">
+              <span className="text-2xl">📍</span>
+              <div>
+                <h2 className="font-semibold text-gray-900">Destination: King Fahad Mosque</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  10980 Washington Blvd, Culver City, CA 90232
+                </p>
+              </div>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(getDestinationMapsUrl(), '_blank')}
+              className="flex items-center space-x-1 text-blue-600 border-blue-300 hover:bg-blue-50"
+            >
+              <MapPin className="h-4 w-4" />
+              <span>Directions</span>
+            </Button>
           </div>
         </div>
 
@@ -163,7 +175,19 @@ export default function DriverPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="pickup_area" className="text-gray-900 font-medium">Pickup Area *</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="pickup_area" className="text-gray-900 font-medium">Pickup Area *</Label>
+                  {formData.pickup_area && formData.pickup_area !== 'Other' && (
+                    <button
+                      type="button"
+                      onClick={() => window.open(getPickupAreaMapsUrl(formData.pickup_area), '_blank')}
+                      className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-sm">View on Maps</span>
+                    </button>
+                  )}
+                </div>
                 <Select value={formData.pickup_area} onValueChange={(value) => handleInputChange('pickup_area', value)}>
                   <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Select pickup area" />

@@ -105,3 +105,39 @@ export function getDashboardStats(drivers: Driver[], riders: Rider[], matches: M
     total_seats_matched: matches.reduce((sum, match) => sum + match.total_seats_used, 0)
   };
 }
+
+// Maps integration utilities
+export function getMapsUrl(address: string, type: 'directions' | 'search' = 'directions'): string {
+  const encodedAddress = encodeURIComponent(address);
+  if (type === 'directions') {
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+}
+
+export function getDestinationMapsUrl(): string {
+  return getMapsUrl('10980 Washington Blvd, Culver City, CA 90232');
+}
+
+export function getPickupAreaMapsUrl(pickupArea: string): string {
+  // Map pickup areas to specific addresses or general UCLA locations
+  const areaMappings: { [key: string]: string } = {
+    'Ackerman Turnaround': 'Ackerman Union, Los Angeles, CA',
+    'Hilgard & Westholme': 'Hilgard Ave & Westholme Ave, Los Angeles, CA',
+    'Bruin Plaza': 'Bruin Plaza, Los Angeles, CA',
+    'Strathmore & Gayley': 'Strathmore Dr & Gayley Ave, Los Angeles, CA',
+    'Levering & Strathmore': 'Levering Ave & Strathmore Dr, Los Angeles, CA',
+    'Weyburn & Kinross': 'Weyburn Dr & Kinross Ave, Los Angeles, CA',
+    'Westwood Village (Broxton Garage)': 'Broxton Ave, Westwood Village, Los Angeles, CA',
+    'De Neve Turnaround': 'De Neve Dr, Los Angeles, CA',
+    'Rieber Turnaround': 'Rieber Ct, Los Angeles, CA',
+    'Hedrick Turnaround': 'Hedrick Dr, Los Angeles, CA',
+    'Saxon Turnaround': 'Saxon Dr, Los Angeles, CA',
+    'Engineering IV Turnaround': 'Engineering IV, Los Angeles, CA',
+    'Parking Lot 36 (Sunset Village)': 'Sunset Village, Los Angeles, CA',
+    'Sunset & Hilgard': 'Sunset Blvd & Hilgard Ave, Los Angeles, CA',
+  };
+  
+  const address = areaMappings[pickupArea] || `${pickupArea}, UCLA, Los Angeles, CA`;
+  return getMapsUrl(address);
+}

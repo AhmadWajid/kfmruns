@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DashboardData } from '@/types/api';
-import { formatPhoneNumber, formatTimePreference, getTimePreferenceColor } from '@/lib/utils';
+import { formatPhoneNumber, formatTimePreference, getTimePreferenceColor, getPickupAreaMapsUrl } from '@/lib/utils';
 import { loginAdmin, logoutAdmin, verifyAdmin } from '@/lib/actions/auth';
 import { getDashboardData } from '@/lib/actions/dashboard';
 import { deleteDriver } from '@/lib/actions/drivers';
@@ -437,7 +437,17 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                           <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
                             <span className="font-medium">{formatPhoneNumber(driver.phone_number)}</span>
                             <span className="hidden sm:inline">•</span>
-                            <span className="truncate">📍 {driver.pickup_area}</span>
+                            <div className="flex items-center space-x-1">
+                              <span className="truncate">📍 {driver.pickup_area}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open(getPickupAreaMapsUrl(driver.pickup_area), '_blank')}
+                                className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                              >
+                                <MapPin className="h-2 w-2" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -558,7 +568,17 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                           <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
                             <span className="font-medium">📞 {formatPhoneNumber(rider.phone_number)}</span>
                             <span className="hidden sm:inline">•</span>
-                            <span>📍 {rider.pickup_area}</span>
+                            <div className="flex items-center space-x-1">
+                              <span>📍 {rider.pickup_area}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
+                                className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                              >
+                                <MapPin className="h-2 w-2" />
+                              </Button>
+                            </div>
                           </div>
                           <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
                             <span>Seats: {rider.seats_needed}</span>
