@@ -60,17 +60,6 @@ src/
    - Run the SQL schema from `src/lib/supabase.ts` in your Supabase SQL editor
    - Get your project URL and anon key
 
-3. **Environment Variables:**
-   Create a `.env.local` file in the root directory:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   ADMIN_PASSWORD_HASH=$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
-   JWT_SECRET=your_jwt_secret_key_here
-   NODE_ENV=development
-   ```
-
 4. **Start the development server:**
    ```bash
    npm run dev
