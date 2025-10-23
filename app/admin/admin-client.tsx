@@ -479,6 +479,13 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                       </div>
                     </div>
 
+                    {/* Compact Driver Notes */}
+                    {driver.notes && (
+                      <div className="mt-2 p-2 bg-blue-100 rounded text-xs text-blue-800">
+                        {driver.notes}
+                      </div>
+                    )}
+
                     {/* Compact Assigned Riders */}
                     {assignedRiders.length > 0 && (
                       <div className="mt-3">
@@ -506,7 +513,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                                       </span>
                                     </div>
                                     {rider.notes && (
-                                      <p className="text-xs text-gray-500 mt-1 break-words">💬 {rider.notes}</p>
+                                      <p className="text-xs text-gray-500 mt-1 break-words">{rider.notes}</p>
                                     )}
                                   </div>
                                 </div>
@@ -534,13 +541,6 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
-
-                    {/* Compact Driver Notes */}
-                    {driver.notes && (
-                      <div className="mt-2 p-2 bg-blue-100 rounded text-xs text-blue-800">
-                        💬 {driver.notes}
                       </div>
                     )}
                   </CardContent>
@@ -588,7 +588,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                             </span>
                           </div>
                           {rider.notes && (
-                            <p className="text-xs text-gray-500 mt-1">💬 {rider.notes}</p>
+                            <p className="text-xs text-gray-500 mt-1">{rider.notes}</p>
                           )}
                         </div>
                       </div>
