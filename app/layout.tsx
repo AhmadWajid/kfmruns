@@ -43,26 +43,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="__className_da75cc">
       <head>
-        <!-- HTML Meta Tags -->
-    <title>UCLA MSA - Isha Ride Matching</title>
-    <meta name="description" content="UCLA Isha prayer rides to King Fahad Mosque. Find drivers and riders for convenient transportation.">
-    
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://kfmruns.netlify.app">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="UCLA MSA - Isha Ride Matching">
-    <meta property="og:description" content="UCLA Isha prayer rides to King Fahad Mosque. Find drivers and riders for convenient transportation.">
-    <meta property="og:image" content="https://opengraph.b-cdn.net/production/images/772e43a7-89d8-4749-9ab3-f68a4f8e9171.png?token=BMRLIqLB6p1iUNAztv7QgNu4vzsomGz2HAdkegdfCDQ&height=681&width=1200&expires=33297240693">
-    
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="kfmruns.netlify.app">
-    <meta property="twitter:url" content="https://kfmruns.netlify.app">
-    <meta name="twitter:title" content="UCLA MSA - Isha Ride Matching">
-    <meta name="twitter:description" content="UCLA Isha prayer rides to King Fahad Mosque. Find drivers and riders for convenient transportation.">
-    <meta name="twitter:image" content="https://opengraph.b-cdn.net/production/images/772e43a7-89d8-4749-9ab3-f68a4f8e9171.png?token=BMRLIqLB6p1iUNAztv7QgNu4vzsomGz2HAdkegdfCDQ&height=681&width=1200&expires=33297240693">
-    
-    <!-- Meta Tags Generated via https://www.opengraph.xyz -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       </head>
       <body className="flex flex-col min-h-screen">
