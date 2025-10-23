@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { RefreshCw, Car, Users, MapPin, Clock, Phone, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,20 @@ interface DashboardClientProps {
 export default function DashboardClient({ initialData }: DashboardClientProps) {
   const [data, setData] = useState<DashboardData>(initialData);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Auto-refresh data on component mount to ensure fresh data
+  useEffect(() => {
+    const refreshData = async () => {
+      try {
+        const newData = await getDashboardData();
+        setData(newData);
+      } catch (error) {
+        console.error('Error auto-refreshing dashboard data:', error);
+      }
+    };
+    
+    refreshData();
+  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);

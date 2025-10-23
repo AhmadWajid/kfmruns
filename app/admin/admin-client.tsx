@@ -295,6 +295,10 @@ export default function AdminClient({ initialData }: AdminClientProps) {
       await clearAllData();
       await fetchData();
       setShowClearModal(false);
+      
+      // Force a hard refresh to clear any cached data
+      window.location.reload();
+      
       alert('All data has been cleared successfully');
     } catch (error) {
       console.error('Error clearing all data:', error);

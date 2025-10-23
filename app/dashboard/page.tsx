@@ -6,3 +6,6 @@ export default async function DashboardPage() {
 
   return <DashboardClient initialData={data} />;
 }
+
+// Force dynamic rendering to prevent caching
+export const dynamic = 'force-dynamic';
