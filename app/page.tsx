@@ -29,15 +29,20 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/driver">
-              <Button size="lg" className="w-full sm:w-auto bg-msa-blue hover:bg-blue-800 text-white">
+              <Button size="lg" className="w-auto bg-msa-blue hover:bg-blue-800 text-white">
                 <Car className="mr-2 h-5 w-5" />
                 Offer a Ride
               </Button>
             </Link>
             <Link href="/rider">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-msa-blue text-msa-blue hover:bg-msa-blue hover:text-white">
+              <Button size="lg" variant="outline" className="w-auto border-msa-blue text-msa-blue hover:bg-msa-blue hover:text-white">
                 <Users className="mr-2 h-5 w-5" />
                 Request a Ride
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button size="lg" variant="secondary" className="w-auto bg-gray-100 text-gray-900 hover:bg-gray-200">
+                View Rides Board
               </Button>
             </Link>
           </div>

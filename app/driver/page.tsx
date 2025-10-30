@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { PICKUP_AREAS, TIME_PREFERENCES } from '@/types/api';
+import { PICKUP_AREAS } from '@/types/api';
 import { createDriver } from '@/lib/actions/drivers';
 import { getDestinationMapsUrl, getPickupAreaMapsUrl } from '@/lib/utils';
 
@@ -23,7 +23,8 @@ export default function DriverPage() {
     seats_available: 1,
     pickup_area: 'Ackerman Turnaround',
     custom_pickup_area: '',
-    time_preference: 'flexible',
+    leave_kfm_time: '',
+    leave_ucla_time: '',
     notes: ''
   });
 
@@ -38,7 +39,8 @@ export default function DriverPage() {
     if (!formData.seats_available) missingFields.push('seats available');
     if (!formData.pickup_area.trim()) missingFields.push('pickup area');
     if (formData.pickup_area === 'Other' && !formData.custom_pickup_area.trim()) missingFields.push('custom pickup location');
-    if (!formData.time_preference.trim()) missingFields.push('time preference');
+    if (!formData.leave_kfm_time.trim()) missingFields.push('time leaving KFM');
+    if (!formData.leave_ucla_time.trim()) missingFields.push('time leaving UCLA');
 
     if (missingFields.length > 0) {
       alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
@@ -198,6 +200,7 @@ export default function DriverPage() {
                         {area}
                       </SelectItem>
                     ))}
+                    <SelectItem value="Other" className="text-gray-900">Other</SelectItem>
                   </SelectContent>
                 </Select>
                 
@@ -216,20 +219,29 @@ export default function DriverPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="time_preference" className="text-gray-900 font-medium">Timing Preference *</Label>
-                <Select value={formData.time_preference} onValueChange={(value) => handleInputChange('time_preference', value)}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                    <SelectValue placeholder="Select timing preference" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
-                    {TIME_PREFERENCES.map((pref) => (
-                      <SelectItem key={pref.value} value={pref.value} className="text-gray-900">
-                        {pref.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="leave_ucla_time" className="text-gray-900 font-medium">Time Leaving UCLA *</Label>
+                  <Input
+                    id="leave_ucla_time"
+                    type="time"
+                    value={formData.leave_ucla_time}
+                    onChange={(e) => handleInputChange('leave_ucla_time', e.target.value)}
+                    className="bg-white border-gray-300 text-gray-900"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="leave_kfm_time" className="text-gray-900 font-medium">Time Leaving KFM *</Label>
+                  <Input
+                    id="leave_kfm_time"
+                    type="time"
+                    value={formData.leave_kfm_time}
+                    onChange={(e) => handleInputChange('leave_kfm_time', e.target.value)}
+                    className="bg-white border-gray-300 text-gray-900"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">

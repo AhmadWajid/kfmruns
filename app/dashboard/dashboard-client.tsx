@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DashboardData } from '@/types/api';
-import { formatPhoneNumber, formatTimePreference, getTimePreferenceColor, getPickupAreaMapsUrl } from '@/lib/utils';
+import { formatPhoneNumber, phoneHref, formatTime12h, getPickupAreaMapsUrl } from '@/lib/utils';
 import { getDashboardData } from '@/lib/actions/dashboard';
 
 interface DashboardClientProps {
@@ -89,113 +89,131 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
           </Card>
         </div>
 
-        {/* Compact Matches Section */}
+        {/* Compact Matches Section - styled similar to Admin page */}
         {data.matches.length > 0 && (
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Current Matches</h2>
             <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
-              {data.matches.map((match: any, index: number) => (
-                <Card key={index} className={`border-0 shadow-sm ${match.riders.length > 0 ? "bg-green-50" : "bg-blue-50"}`}>
-                  <CardContent className="p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
-                      <div className="flex items-center space-x-2">
-                        <Car className={`h-4 w-4 ${match.riders.length > 0 ? 'text-green-600' : 'text-blue-600'}`} />
-                        <span className="font-medium text-gray-900">{match.driver.name}</span>
-                        <span className="hidden sm:inline text-sm text-gray-600">•</span>
-                        <div className="hidden sm:flex items-center space-x-1">
-                          <span className="text-sm text-gray-600">{match.driver.pickup_area}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => window.open(getPickupAreaMapsUrl(match.driver.pickup_area), '_blank')}
-                            className="h-4 w-4 p-0 text-blue-600 hover:bg-blue-100"
-                          >
-                            <MapPin className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between sm:justify-end space-x-2">
-                        <div className="flex items-center space-x-1 sm:hidden">
-                          <span className="text-sm text-gray-600">{match.driver.pickup_area}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => window.open(getPickupAreaMapsUrl(match.driver.pickup_area), '_blank')}
-                            className="h-4 w-4 p-0 text-blue-600 hover:bg-blue-100"
-                          >
-                            <MapPin className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <Badge variant="outline" className={`text-xs ${match.riders.length > 0 ? "text-green-700 border-green-300" : "text-blue-700 border-blue-300"}`}>
-                          {match.remaining_seats} seats
-                        </Badge>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-600 mb-2 space-y-1 sm:space-y-0">
-                      <span className="font-medium">{formatPhoneNumber(match.driver.phone_number)}</span>
-                      <Badge className={`text-xs ${getTimePreferenceColor(match.driver.time_preference)}`}>
-                        {formatTimePreference(match.driver.time_preference)}
-                      </Badge>
-                    </div>
-                    
-                    {match.riders.length > 0 ? (
-                      <div className="border-t pt-2">
-                        <p className="text-xs font-medium text-gray-700 mb-2">
-                          Passengers ({match.riders.length}):
-                        </p>
-                        <div className="space-y-1">
-                          {match.riders.map((rider: any, riderIndex: number) => (
-                            <div key={riderIndex} className="bg-white p-2 rounded text-sm">
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-1 sm:space-y-0">
-                                <div className="flex items-center space-x-2">
-                                  <Users className="h-3 w-3 text-blue-600" />
-                                  <span className="font-medium">{rider.name}</span>
-                                  <span className="text-xs text-gray-500">({rider.seats_needed} seat{rider.seats_needed > 1 ? 's' : ''})</span>
-                                </div>
-                                <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
-                                  <span className="text-xs text-gray-500 font-medium">{formatPhoneNumber(rider.phone_number)}</span>
-                                  <Badge variant="outline" className="text-xs w-fit">
-                                    {formatTimePreference(rider.time_preference)}
-                                  </Badge>
-                                </div>
+              {data.matches.map((match: any, index: number) => {
+                const usedSeats = match.riders.reduce((sum: number, r: any) => sum + r.seats_needed, 0);
+                const totalPeople = 1 + usedSeats; // Driver + passengers
+                const totalCapacity = 1 + (match.driver.seats_available ?? 0);
+                return (
+                  <Card key={index} className="border-0 shadow-sm bg-blue-50/30">
+                    <CardContent className="p-4 relative">
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-3 space-y-2 lg:space-y-0 pr-28">
+                        <div className="flex items-center space-x-2 flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center space-x-1 min-w-0">
+                              <h3 className="font-semibold text-gray-900 truncate text-sm">{match.driver.name}</h3>
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
+                              <a href={phoneHref(match.driver.phone_number)} className="font-medium text-blue-700 hover:underline">{formatPhoneNumber(match.driver.phone_number)}</a>
+                              <span className="hidden sm:inline">•</span>
+                              <div className="flex items-center space-x-1">
+                                <span className="truncate">📍 {match.driver.pickup_area}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => window.open(getPickupAreaMapsUrl(match.driver.pickup_area), '_blank')}
+                                  className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                                >
+                                  <MapPin className="h-2 w-2" />
+                                </Button>
                               </div>
                             </div>
-                          ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between lg:justify-end space-x-2">
+                          <Badge className="text-xs">
+                            KFM: {formatTime12h(match.driver.leave_kfm_time)} • UCLA: {formatTime12h(match.driver.leave_ucla_time)}
+                          </Badge>
+                          <div className="flex items-center space-x-2 absolute top-3 right-3">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${totalPeople > totalCapacity 
+                                ? "text-red-700 border-red-300 bg-red-50" 
+                                : "text-blue-700 border-blue-300"
+                              }`}
+                            >
+                              {totalPeople}/{totalCapacity}
+                              {totalPeople > totalCapacity && " ⚠️"}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                    ) : (
-                      <div className="border-t pt-2">
-                        <p className="text-xs text-gray-600 italic">
-                          No riders matched yet
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+
+                      {match.riders.length > 0 && (
+                        <div className="mt-3">
+                          <h4 className="text-xs font-medium text-gray-700 mb-2">
+                            Passengers ({match.riders.length})
+                          </h4>
+                          <div className="space-y-1">
+                            {match.riders.map((rider: any, riderIndex: number) => (
+                              <div key={riderIndex} className="bg-blue-50 rounded p-2 border border-blue-100 relative">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                                  <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                    <div className="min-w-0 flex-1">
+                                      <div className="flex items-center space-x-1 min-w-0">
+                                        <Users className="h-3 w-3 text-blue-600 shrink-0" />
+                                        <p className="font-medium text-gray-900 truncate text-xs">{rider.name}</p>
+                                      </div>
+                                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
+                                        <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline">📞 {formatPhoneNumber(rider.phone_number)}</a>
+                                        <span className="hidden sm:inline">•</span>
+                                        <div className="flex items-center space-x-1 truncate">
+                                          <span>📍 {rider.pickup_area}</span>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
+                                            className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                                          >
+                                            <MapPin className="h-2 w-2" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                      {rider.seats_needed > 1 && (
+                                        <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                          <span>Seats: {rider.seats_needed}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* Compact Unmatched Riders */}
+        {/* Compact Unmatched Riders - styled similar to Admin page */}
         {data.unmatched_riders.length > 0 && (
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Unmatched Riders</h2>
             <div className="grid gap-2 lg:grid-cols-2 xl:grid-cols-3">
               {data.unmatched_riders.map((rider: any, index: number) => (
-                <Card key={index} className="border-0 shadow-sm bg-orange-50">
-                  <CardContent className="p-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                <Card key={index} className="border-0 shadow-sm bg-orange-50/30">
+                  <CardContent className="p-3 relative">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0 pr-14">
                       <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4 text-orange-600" />
                         <div>
-                          <p className="font-medium text-gray-900 text-sm">{rider.name}</p>
+                          <div className="flex items-center space-x-1">
+                            <Users className="h-4 w-4 text-gray-700" />
+                            <p className="font-medium text-gray-900 text-sm">{rider.name}</p>
+                          </div>
                           <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                            <span className="font-medium">{formatPhoneNumber(rider.phone_number)}</span>
+                            <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline">📞 {formatPhoneNumber(rider.phone_number)}</a>
                             <span className="hidden sm:inline">•</span>
                             <div className="flex items-center space-x-1">
-                              <span>{rider.pickup_area}</span>
+                              <span>📍 {rider.pickup_area}</span>
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -206,20 +224,20 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                               </Button>
                             </div>
                           </div>
+                          <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                            <span>Seats: {rider.seats_needed}</span>
+                          </div>
+                          {/* reason hidden on public dashboard */}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className="text-xs text-orange-700 border-orange-300">
-                          {rider.seats_needed} seat{rider.seats_needed > 1 ? 's' : ''}
-                        </Badge>
-                        <Badge className={`text-xs ${getTimePreferenceColor(rider.time_preference)}`}>
-                          {formatTimePreference(rider.time_preference)}
-                        </Badge>
-                      </div>
+                      {rider.seats_needed > 1 && (
+                        <div className="flex items-center space-x-2 absolute top-3 right-3">
+                          <Badge variant="outline" className="text-xs text-orange-700 border-orange-300">
+                            {rider.seats_needed} seats
+                          </Badge>
+                        </div>
+                      )}
                     </div>
-                    {rider.reason && (
-                      <p className="text-xs text-orange-600 mt-2">{rider.reason}</p>
-                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -253,3 +271,4 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
     </div>
   );
 }
+

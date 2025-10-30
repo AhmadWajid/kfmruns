@@ -27,12 +27,11 @@ export async function createRider(riderData: {
   phone_number: string;
   seats_needed: number;
   pickup_area: string;
-  time_preference: string;
   notes?: string;
 }): Promise<Rider> {
   try {
     // Validation
-    if (!riderData.name || !riderData.phone_number || !riderData.pickup_area || !riderData.time_preference) {
+    if (!riderData.name || !riderData.phone_number || !riderData.pickup_area) {
       throw new Error('Missing required fields');
     }
 
@@ -41,10 +40,7 @@ export async function createRider(riderData: {
       throw new Error('Seats needed must be between 1 and 8');
     }
 
-    const validTimePreferences = ['leave_early', 'stay_after', 'flexible'];
-    if (!validTimePreferences.includes(riderData.time_preference)) {
-      throw new Error('Invalid time preference');
-    }
+    // no time preference validation
 
     // Insert rider
     const { data, error } = await supabase
@@ -55,7 +51,6 @@ export async function createRider(riderData: {
           phone_number: riderData.phone_number,
           seats_needed: seatsNeeded,
           pickup_area: riderData.pickup_area,
-          time_preference: riderData.time_preference,
           notes: riderData.notes || null
         }
       ])

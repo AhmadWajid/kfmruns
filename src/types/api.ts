@@ -4,7 +4,8 @@ export interface Driver {
   phone_number: string;
   seats_available: number;
   pickup_area: string;
-  time_preference: 'leave_early' | 'stay_after' | 'flexible';
+  leave_kfm_time?: string;
+  leave_ucla_time?: string;
   notes?: string;
   created_at: string;
 }
@@ -15,7 +16,6 @@ export interface Rider {
   phone_number: string;
   seats_needed: number;
   pickup_area: string;
-  time_preference: 'leave_early' | 'stay_after' | 'flexible';
   notes?: string;
   driver_id?: number;
   created_at: string;
@@ -49,30 +49,13 @@ export interface FormData {
   seats_available?: number;
   seats_needed?: number;
   pickup_area: string;
-  time_preference: 'leave_early' | 'stay_after' | 'flexible';
+  leave_kfm_time?: string;
+  leave_ucla_time?: string;
   notes?: string;
 }
 
 export const PICKUP_AREAS = [
   'Ackerman Turnaround',
-  'Hilgard & Westholme',
-  'Bruin Plaza',
-  'Strathmore & Gayley',
-  'Levering & Strathmore',
-  'Weyburn & Kinross',
-  'Westwood Village (Broxton Garage)',
-  'De Neve Turnaround',
-  'Rieber Turnaround',
-  'Hedrick Turnaround',
-  'Saxon Turnaround',
-  'Engineering IV Turnaround',
-  'Parking Lot 36 (Sunset Village)',
-  'Sunset & Hilgard',
-  'Other'
-] as const;
-
-export const TIME_PREFERENCES = [
-  { value: 'leave_early', label: '⏰ Leave Early - Right after prayer' },
-  { value: 'stay_after', label: '🕐 Stay After - Socialize/food' },
-  { value: 'flexible', label: '🔄 Flexible - Either works' }
+  'De Neve & Gayley Intersection',
+  'Gayley Heights'
 ] as const;

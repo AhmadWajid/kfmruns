@@ -54,11 +54,11 @@ export default function Navbar({ currentPage = 'home' }: NavbarProps) {
 
   return (
     <header className="fixed z-50 w-full flex flex-col items-stretch">
-      <div className="flex z-1 justify-between items-stretch w-full transition duration-200 px-6 bg-msa-blue shadow-md">
+      <div className="flex z-1 justify-between items-center w-full transition duration-200 px-4 md:px-6 bg-msa-blue shadow-md">
         {/* Logo */}
-        <Link href="/" className="flex py-3 gap-2 items-center">
+        <Link href="/" className="flex py-3 gap-2 items-center min-w-0">
           <div className="text-2xl">🕌</div>
-          <h1 className="text-4xl text-msa-yellow font-bold">UCLA MSA</h1>
+          <h1 className="text-2xl md:text-4xl text-msa-yellow font-bold truncate">UCLA MSA</h1>
         </Link>
 
         {/* Desktop Navigation */}

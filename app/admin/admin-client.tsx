@@ -10,9 +10,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DashboardData } from '@/types/api';
-import { formatPhoneNumber, formatTimePreference, getTimePreferenceColor, getPickupAreaMapsUrl } from '@/lib/utils';
+import { formatPhoneNumber, phoneHref, formatTime12h, getPickupAreaMapsUrl } from '@/lib/utils';
 import { loginAdmin, logoutAdmin, verifyAdmin } from '@/lib/actions/auth';
-import { getDashboardData } from '@/lib/actions/dashboard';
+import { getDashboardData, getAppState, setFinalized } from '@/lib/actions/dashboard';
 import { deleteDriver } from '@/lib/actions/drivers';
 import { deleteRider, assignRiderToDriver, unassignRider, fixOverAssignments, clearAllData } from '@/lib/actions/riders';
 
@@ -35,9 +35,16 @@ export default function AdminClient({ initialData }: AdminClientProps) {
   const [moveRiderId, setMoveRiderId] = useState<number | null>(null);
   const [moveDriverId, setMoveDriverId] = useState<string>('');
   const [showClearModal, setShowClearModal] = useState(false);
+  const [isFinalized, setIsFinalized] = useState(false);
 
   useEffect(() => {
     checkAuth();
+    (async () => {
+      try {
+        const state = await getAppState();
+        setIsFinalized(state.is_finalized);
+      } catch {}
+    })();
   }, []);
 
   const checkAuth = async () => {
@@ -290,6 +297,21 @@ export default function AdminClient({ initialData }: AdminClientProps) {
     }
   };
 
+  const handleToggleFinalize = async () => {
+    try {
+      const next = !isFinalized;
+      await setFinalized(next);
+      setIsFinalized(next);
+      if (next) {
+        alert('Dashboard published');
+      } else {
+        alert('Dashboard set to private');
+      }
+    } catch (e) {
+      alert('Failed to update dashboard visibility');
+    }
+  };
+
   const handleClearAllData = async () => {
     try {
       await clearAllData();
@@ -403,8 +425,15 @@ export default function AdminClient({ initialData }: AdminClientProps) {
             </Card>
           </div>
 
-          {/* Clear Data Button */}
-          <div className="flex justify-center lg:justify-end">
+          {/* Actions */}
+          <div className="flex justify-center lg:justify-end gap-2">
+            <Button
+              onClick={handleToggleFinalize}
+              variant={isFinalized ? 'outline' : 'default'}
+              className={isFinalized ? 'text-yellow-700 border-yellow-300 hover:bg-yellow-50' : 'bg-green-600 hover:bg-green-700'}
+            >
+              {isFinalized ? 'Unpublish Dashboard' : 'Publish Dashboard'}
+            </Button>
             <Button
               onClick={() => setShowClearModal(true)}
               variant="outline"
@@ -431,15 +460,14 @@ export default function AdminClient({ initialData }: AdminClientProps) {
               
               return (
                 <Card key={driver.id} className="border-0 shadow-sm bg-blue-50/30">
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 relative">
                     {/* Responsive Driver Info */}
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-3 space-y-2 lg:space-y-0">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-3 space-y-2 lg:space-y-0 pr-28">
                       <div className="flex items-center space-x-2 flex-1 min-w-0">
-                        <span className="text-lg flex-shrink-0">🚗</span>
                         <div className="min-w-0 flex-1">
                           <h3 className="font-semibold text-gray-900 truncate text-sm">{driver.name}</h3>
                           <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                            <span className="font-medium">{formatPhoneNumber(driver.phone_number)}</span>
+                            <a href={phoneHref(driver.phone_number)} className="font-medium text-blue-700 hover:underline">{formatPhoneNumber(driver.phone_number)}</a>
                             <span className="hidden sm:inline">•</span>
                             <div className="flex items-center space-x-1">
                               <span className="truncate">📍 {driver.pickup_area}</span>
@@ -456,7 +484,10 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                         </div>
                       </div>
                       <div className="flex items-center justify-between lg:justify-end space-x-2">
-                        <div className="flex items-center space-x-2">
+                        <Badge className="text-xs">
+                          KFM: {formatTime12h(driver.leave_kfm_time)} • UCLA: {formatTime12h(driver.leave_ucla_time)}
+                        </Badge>
+                        <div className="flex items-center space-x-2 absolute top-3 right-12">
                           <Badge 
                             variant="outline" 
                             className={`text-xs ${totalPeople > totalCapacity 
@@ -467,15 +498,12 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                             {totalPeople}/{totalCapacity}
                             {totalPeople > totalCapacity && " ⚠️"}
                           </Badge>
-                          <Badge className={`text-xs ${getTimePreferenceColor(driver.time_preference)}`}>
-                            {formatTimePreference(driver.time_preference)}
-                          </Badge>
                         </div>
                         <Button
                           onClick={() => handleDeleteDriver(driver.id)}
                           variant="outline"
                           size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 absolute top-3 right-3"
                           title="Delete Driver"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -498,30 +526,39 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                         </h4>
                         <div className="space-y-1">
                           {assignedRiders.map((rider) => (
-                            <div key={rider.id} className="bg-white rounded p-2 border border-gray-200">
+                            <div key={rider.id} className="bg-blue-50 rounded p-2 border border-blue-100 relative">
                               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
                                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                  <span className="text-sm flex-shrink-0">👤</span>
                                   <div className="min-w-0 flex-1">
                                     <p className="font-medium text-gray-900 truncate text-xs">{rider.name}</p>
                                     <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                                      <span className="font-medium">📞 {formatPhoneNumber(rider.phone_number)}</span>
+                                      <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline">📞 {formatPhoneNumber(rider.phone_number)}</a>
                                       <span className="hidden sm:inline">•</span>
-                                      <span className="truncate">📍 {rider.pickup_area}</span>
+                                      <div className="flex items-center space-x-1 truncate">
+                                        <span>📍 {rider.pickup_area}</span>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
+                                          className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                                        >
+                                          <MapPin className="h-2 w-2" />
+                                        </Button>
+                                      </div>
                                     </div>
-                                    <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                                      <span>Seats: {rider.seats_needed}</span>
-                                      <span>•</span>
-                                      <span className={getTimePreferenceColor(rider.time_preference)}>
-                                        {formatTimePreference(rider.time_preference)}
-                                      </span>
-                                    </div>
+                                    {rider.seats_needed > 1 && (
+                                      <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                        <span>Seats: {rider.seats_needed}</span>
+                                      </div>
+                                    )}
                                     {rider.notes && (
-                                      <p className="text-xs text-gray-500 mt-1 break-words">{rider.notes}</p>
+                                      <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800 wrap-break-word border border-blue-100">
+                                        {rider.notes}
+                                      </div>
                                     )}
                                   </div>
                                 </div>
-                                <div className="flex items-center space-x-1 flex-shrink-0">
+                                <div className="flex items-center space-x-1 shrink-0 absolute top-2 right-2">
                                   <Button
                                     onClick={() => handleMoveRider(rider.id)}
                                     variant="outline"
@@ -563,10 +600,10 @@ export default function AdminClient({ initialData }: AdminClientProps) {
             <div className="grid gap-2 lg:grid-cols-2 xl:grid-cols-3">
               {data.unmatched_riders.map((rider) => (
                 <Card key={rider.id} className="border-0 shadow-sm bg-orange-50/30">
-                  <CardContent className="p-3">
+                  <CardContent className="p-3 relative">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg">👤</span>
+                        <Users className="h-4 w-4 text-gray-700" />
                         <div>
                           <p className="font-medium text-gray-900 text-sm">{rider.name}</p>
                           <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
@@ -584,15 +621,13 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                               </Button>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                            <span>Seats: {rider.seats_needed}</span>
-                            <span>•</span>
-                            <span className={getTimePreferenceColor(rider.time_preference)}>
-                              {formatTimePreference(rider.time_preference)}
-                            </span>
-                          </div>
+                          {rider.seats_needed > 1 && (
+                            <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                              <span>Seats: {rider.seats_needed}</span>
+                            </div>
+                          )}
                           {rider.notes && (
-                            <p className="text-xs text-gray-500 mt-1">{rider.notes}</p>
+                            <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800 wrap-break-word border border-blue-100">{rider.notes}</div>
                           )}
                         </div>
                       </div>
@@ -601,7 +636,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                           onClick={() => handleAssignRider(rider.id)}
                           variant="outline"
                           size="sm"
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-6 w-6 p-0"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-6 w-6 p-0 absolute top-3 right-10"
                           title="Assign to driver"
                         >
                           <Users className="h-3 w-3" />
@@ -610,7 +645,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                           onClick={() => handleDeleteRider(rider.id)}
                           variant="outline"
                           size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 absolute top-3 right-3"
                           title="Delete rider"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -640,8 +675,8 @@ export default function AdminClient({ initialData }: AdminClientProps) {
 
       {/* Driver Assignment Modal */}
       {showAssignModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 relative z-[101] shadow-xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-100">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 relative z-101 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Assign Rider to Driver</h3>
               <button
@@ -660,7 +695,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Choose a driver..." />
                 </SelectTrigger>
-                <SelectContent className="z-[9999] bg-white border shadow-lg" position="popper">
+                <SelectContent className="z-9999 bg-white border shadow-lg" position="popper">
                   {data.drivers
                     .filter(driver => {
                       const assignedRiders = data.riders.filter(rider => rider.driver_id === driver.id);
@@ -703,8 +738,8 @@ export default function AdminClient({ initialData }: AdminClientProps) {
 
       {/* Move Rider Modal */}
       {showMoveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 relative z-[101] shadow-xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-100">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 relative z-101 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Move Rider to Different Driver</h3>
               <button
@@ -723,7 +758,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Choose a driver..." />
                 </SelectTrigger>
-                <SelectContent className="z-[9999] bg-white border shadow-lg" position="popper">
+                <SelectContent className="z-9999 bg-white border shadow-lg" position="popper">
                   {data.drivers
                     .filter(driver => {
                       const assignedRiders = data.riders.filter(rider => rider.driver_id === driver.id);
@@ -775,8 +810,8 @@ export default function AdminClient({ initialData }: AdminClientProps) {
 
       {/* Clear All Data Confirmation Modal */}
       {showClearModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 relative z-[101] shadow-xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-100">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 relative z-101 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Clear All Data</h3>
               <button

@@ -4,6 +4,25 @@ import { supabase } from '@/lib/supabase';
 import { createMatches, getDashboardStats } from '@/lib/utils';
 import { DashboardData } from '@/types/api';
 
+export async function getAppState(): Promise<{ is_finalized: boolean }> {
+  const { data, error } = await supabase.from('app_state').select('is_finalized').eq('id', 1).single();
+  if (error) {
+    console.error('Error fetching app state:', error);
+    return { is_finalized: false };
+  }
+  return { is_finalized: data?.is_finalized ?? false };
+}
+
+export async function setFinalized(isFinalized: boolean): Promise<void> {
+  const { error } = await supabase
+    .from('app_state')
+    .upsert({ id: 1, is_finalized: isFinalized, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+  if (error) {
+    console.error('Error updating app state:', error);
+    throw new Error('Failed to update app state');
+  }
+}
+
 export async function getDashboardData(): Promise<DashboardData> {
   try {
     // Fetch drivers and riders

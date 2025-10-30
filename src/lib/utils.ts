@@ -15,53 +15,39 @@ export function formatPhoneNumber(phone: string): string {
   return phone;
 }
 
-export function formatTimePreference(preference: string): string {
-  const preferences = {
-    'leave_early': 'Leave Early',
-    'stay_after': 'Stay After',
-    'flexible': 'Flexible'
-  };
-  return preferences[preference as keyof typeof preferences] || preference;
+export function phoneHref(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) return `tel:+1${digits}`;
+  return `tel:${digits || phone}`;
 }
 
-export function getTimePreferenceColor(preference: string): string {
-  const colors = {
-    'leave_early': 'text-blue-600 bg-blue-100',
-    'stay_after': 'text-green-600 bg-green-100',
-    'flexible': 'text-purple-600 bg-purple-100'
-  };
-  return colors[preference as keyof typeof colors] || 'text-gray-600 bg-gray-100';
+export function formatTime12h(time24: string | undefined | null): string {
+  if (!time24) return '—';
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time24.trim());
+  if (!match) return time24; // fallback if unexpected format
+  let hours = parseInt(match[1], 10);
+  const minutes = match[2];
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  if (hours === 0) hours = 12;
+  return `${hours}:${minutes} ${ampm}`;
 }
 
-export function getTimePreferenceScore(riderPreference: string, driverPreference: string): number {
-  // Exact match gets highest score
-  if (riderPreference === driverPreference) return 3;
-  
-  // Flexible matches get medium score
-  if (riderPreference === 'flexible' || driverPreference === 'flexible') return 2;
-  
-  // Different preferences get lowest score (but still matchable)
-  return 1;
-}
+// Time preference removed
 
 export function createMatches(drivers: Driver[], riders: Rider[]): { matches: Match[], unmatchedRiders: UnmatchedRider[] } {
   const matches: Match[] = [];
   const unmatchedRiders: UnmatchedRider[] = [];
   const usedRiderIds = new Set<number>();
 
-  // Sort drivers by pickup area and time preference for better matching
-  const sortedDrivers = [...drivers].sort((a, b) => {
-    if (a.pickup_area !== b.pickup_area) {
-      return a.pickup_area.localeCompare(b.pickup_area);
-    }
-    return a.time_preference.localeCompare(b.time_preference);
-  });
+  // Sort drivers by pickup area to group visually
+  const sortedDrivers = [...drivers].sort((a, b) => a.pickup_area.localeCompare(b.pickup_area));
 
   for (const driver of sortedDrivers) {
     const driverMatches: Rider[] = [];
     let remainingSeats = driver.seats_available;
 
-    // First, add already assigned riders to this driver
+    // 1) Respect manual assignments first
     const alreadyAssignedRiders = riders.filter(rider => rider.driver_id === driver.id);
     for (const rider of alreadyAssignedRiders) {
       driverMatches.push(rider);
@@ -69,19 +55,30 @@ export function createMatches(drivers: Driver[], riders: Rider[]): { matches: Ma
       remainingSeats -= rider.seats_needed;
     }
 
-    // Note: We don't automatically assign unassigned riders here
-    // They should remain in the unmatched section until manually assigned
+    // 2) Auto-assign riders by pickup area priority until seats fill up
+    if (remainingSeats > 0) {
+      const sameAreaUnassigned = riders.filter(rider =>
+        !usedRiderIds.has(rider.id) && !rider.driver_id && rider.pickup_area === driver.pickup_area
+      );
 
-    // Always add the driver to matches, even if no riders are matched
+      for (const rider of sameAreaUnassigned) {
+        if (remainingSeats - rider.seats_needed < 0) break;
+        driverMatches.push(rider);
+        usedRiderIds.add(rider.id);
+        remainingSeats -= rider.seats_needed;
+        if (remainingSeats === 0) break;
+      }
+    }
+
     matches.push({
       driver,
       riders: driverMatches,
-      total_seats_used: driver.seats_available - remainingSeats,
-      remaining_seats: Math.max(0, remainingSeats) // Ensure remaining seats is never negative
+      total_seats_used: driver.seats_available - Math.max(0, remainingSeats),
+      remaining_seats: Math.max(0, remainingSeats)
     });
   }
 
-  // Find unmatched riders (only unassigned ones)
+  // Riders left unassigned become unmatched
   for (const rider of riders) {
     if (!usedRiderIds.has(rider.id) && !rider.driver_id) {
       unmatchedRiders.push({
@@ -122,20 +119,9 @@ export function getDestinationMapsUrl(): string {
 export function getPickupAreaMapsUrl(pickupArea: string): string {
   // Map pickup areas to specific addresses or general UCLA locations
   const areaMappings: { [key: string]: string } = {
-    'Ackerman Turnaround': 'Ackerman Union, Los Angeles, CA',
-    'Hilgard & Westholme': 'Hilgard Ave & Westholme Ave, Los Angeles, CA',
-    'Bruin Plaza': 'Bruin Plaza, Los Angeles, CA',
-    'Strathmore & Gayley': 'Strathmore Dr & Gayley Ave, Los Angeles, CA',
-    'Levering & Strathmore': 'Levering Ave & Strathmore Dr, Los Angeles, CA',
-    'Weyburn & Kinross': 'Weyburn Dr & Kinross Ave, Los Angeles, CA',
-    'Westwood Village (Broxton Garage)': 'Broxton Ave, Westwood Village, Los Angeles, CA',
-    'De Neve Turnaround': 'De Neve Dr, Los Angeles, CA',
-    'Rieber Turnaround': 'Rieber Ct, Los Angeles, CA',
-    'Hedrick Turnaround': 'Hedrick Dr, Los Angeles, CA',
-    'Saxon Turnaround': 'Saxon Dr, Los Angeles, CA',
-    'Engineering IV Turnaround': 'Engineering IV, Los Angeles, CA',
-    'Parking Lot 36 (Sunset Village)': 'Sunset Village, Los Angeles, CA',
-    'Sunset & Hilgard': 'Sunset Blvd & Hilgard Ave, Los Angeles, CA',
+    'Ackerman Turnaround': '404 Westwood Plaza, Los Angeles, CA 90095',
+    'De Neve & Gayley Intersection': '475 Gayley Ave, Los Angeles, CA 90024',
+    'Gayley Heights': 'Gayley Heights, Los Angeles, CA',
   };
   
   const address = areaMappings[pickupArea] || `${pickupArea}, UCLA, Los Angeles, CA`;

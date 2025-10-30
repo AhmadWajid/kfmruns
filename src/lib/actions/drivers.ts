@@ -27,7 +27,8 @@ export async function createDriver(driverData: {
   phone_number: string;
   seats_available: number;
   pickup_area: string;
-  time_preference: string;
+  leave_kfm_time: string;
+  leave_ucla_time: string;
   notes?: string;
 }): Promise<Driver> {
   try {
@@ -37,7 +38,8 @@ export async function createDriver(driverData: {
     if (!driverData.phone_number?.trim()) missingFields.push('phone number');
     if (!driverData.seats_available) missingFields.push('seats available');
     if (!driverData.pickup_area?.trim()) missingFields.push('pickup area');
-    if (!driverData.time_preference?.trim()) missingFields.push('time preference');
+    if (!driverData.leave_kfm_time?.trim()) missingFields.push('time leaving KFM');
+    if (!driverData.leave_ucla_time?.trim()) missingFields.push('time leaving UCLA');
     
     if (missingFields.length > 0) {
       throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
@@ -47,10 +49,7 @@ export async function createDriver(driverData: {
       throw new Error('Seats available must be between 1 and 8');
     }
 
-    const validTimePreferences = ['leave_early', 'stay_after', 'flexible'];
-    if (!validTimePreferences.includes(driverData.time_preference)) {
-      throw new Error('Invalid time preference');
-    }
+    // no time preference validation
 
     // Insert driver
     const { data, error } = await supabase
@@ -61,7 +60,8 @@ export async function createDriver(driverData: {
           phone_number: driverData.phone_number,
           seats_available: driverData.seats_available,
           pickup_area: driverData.pickup_area,
-          time_preference: driverData.time_preference,
+          leave_kfm_time: driverData.leave_kfm_time,
+          leave_ucla_time: driverData.leave_ucla_time,
           notes: driverData.notes || null
         }
       ])

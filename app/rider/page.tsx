@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { PICKUP_AREAS, TIME_PREFERENCES } from '@/types/api';
+import { PICKUP_AREAS } from '@/types/api';
 import { createRider } from '@/lib/actions/riders';
 import { getDestinationMapsUrl, getPickupAreaMapsUrl } from '@/lib/utils';
 
@@ -21,8 +21,6 @@ export default function RiderPage() {
     name: '',
     phone_number: '',
     pickup_area: 'Ackerman Turnaround',
-    custom_pickup_area: '',
-    time_preference: 'flexible',
     notes: ''
   });
 
@@ -35,8 +33,6 @@ export default function RiderPage() {
     if (!formData.name.trim()) missingFields.push('name');
     if (!formData.phone_number.trim()) missingFields.push('phone number');
     if (!formData.pickup_area.trim()) missingFields.push('pickup area');
-    if (formData.pickup_area === 'Other' && !formData.custom_pickup_area.trim()) missingFields.push('custom pickup location');
-    if (!formData.time_preference.trim()) missingFields.push('time preference');
 
     if (missingFields.length > 0) {
       alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
@@ -48,7 +44,6 @@ export default function RiderPage() {
       // Use custom pickup area if "Other" is selected
       const riderData = {
         ...formData,
-        pickup_area: formData.pickup_area === 'Other' ? formData.custom_pickup_area : formData.pickup_area,
         seats_needed: 1
       };
       
@@ -163,7 +158,7 @@ export default function RiderPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="pickup_area" className="text-gray-900 font-medium">Pickup Area *</Label>
-                  {formData.pickup_area && formData.pickup_area !== 'Other' && (
+                  {formData.pickup_area && (
                     <button
                       type="button"
                       onClick={() => window.open(getPickupAreaMapsUrl(formData.pickup_area), '_blank')}
@@ -187,36 +182,9 @@ export default function RiderPage() {
                   </SelectContent>
                 </Select>
                 
-                {formData.pickup_area === 'Other' && (
-                  <div className="mt-2">
-                    <Label htmlFor="custom_pickup_area" className="text-gray-900 font-medium">Custom Pickup Location *</Label>
-                    <Input
-                      id="custom_pickup_area"
-                      value={formData.custom_pickup_area}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('custom_pickup_area', e.target.value)}
-                      placeholder="Enter your pickup location"
-                      className="bg-white border-gray-300 text-gray-900 placeholder-gray-500"
-                      required
-                    />
-                  </div>
-                )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="time_preference" className="text-gray-900 font-medium">Timing Preference *</Label>
-                <Select value={formData.time_preference} onValueChange={(value: string) => handleInputChange('time_preference', value)}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                    <SelectValue placeholder="Select your preference" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
-                    {TIME_PREFERENCES.map((pref: any) => (
-                      <SelectItem key={pref.value} value={pref.value} className="text-gray-900">
-                        {pref.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              
 
               <div className="space-y-2">
                 <Label htmlFor="notes" className="text-gray-900 font-medium">Notes (optional)</Label>
