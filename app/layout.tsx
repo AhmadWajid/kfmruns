@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: "UCLA Thursday Isha prayer rides to King Fahad Mosque. Find drivers and riders for convenient transportation.",
   keywords: "UCLA, MSA, Muslim, ride sharing, transportation, King Fahad Mosque, Isha prayer",
   authors: [{ name: "UCLA Muslim Student Association" }],
-  viewport: "width=device-width, initial-scale=1",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover",
   openGraph: {
     url: "https://kfmruns.netlify.app",
     type: "website",

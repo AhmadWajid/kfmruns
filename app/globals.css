@@ -58,6 +58,17 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Prevent iOS Safari zoom on form focus by ensuring 16px controls */
+input, select, textarea, button {
+  font-size: 16px;
+}
+
+/* Improve touch behavior to reduce inadvertent zoom gestures */
+html, body {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
 /* MSA UCLA Color Scheme - Light Mode Primary */
 :root {
   --msa-blue: #1e3a8a;

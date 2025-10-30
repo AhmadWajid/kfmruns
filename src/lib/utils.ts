@@ -40,31 +40,46 @@ export function createMatches(drivers: Driver[], riders: Rider[]): { matches: Ma
   const unmatchedRiders: UnmatchedRider[] = [];
   const usedRiderIds = new Set<number>();
 
+  // Helper function to ensure ID is a number
+  const getRiderId = (rider: Rider): number => {
+    return typeof rider.id === 'string' ? parseInt(rider.id, 10) : rider.id;
+  };
+
+  const getDriverId = (driver: Driver): number => {
+    return typeof driver.id === 'string' ? parseInt(driver.id, 10) : driver.id;
+  };
+
   // Sort drivers by pickup area to group visually
   const sortedDrivers = [...drivers].sort((a, b) => a.pickup_area.localeCompare(b.pickup_area));
 
   for (const driver of sortedDrivers) {
     const driverMatches: Rider[] = [];
     let remainingSeats = driver.seats_available;
+    const driverIdNum = getDriverId(driver);
 
     // 1) Respect manual assignments first
-    const alreadyAssignedRiders = riders.filter(rider => rider.driver_id === driver.id);
+    const alreadyAssignedRiders = riders.filter(rider => {
+      const riderDriverId = rider.driver_id ? (typeof rider.driver_id === 'string' ? parseInt(rider.driver_id, 10) : rider.driver_id) : null;
+      return riderDriverId === driverIdNum;
+    });
+    
     for (const rider of alreadyAssignedRiders) {
       driverMatches.push(rider);
-      usedRiderIds.add(rider.id);
+      usedRiderIds.add(getRiderId(rider));
       remainingSeats -= rider.seats_needed;
     }
 
     // 2) Auto-assign riders by pickup area priority until seats fill up
     if (remainingSeats > 0) {
-      const sameAreaUnassigned = riders.filter(rider =>
-        !usedRiderIds.has(rider.id) && !rider.driver_id && rider.pickup_area === driver.pickup_area
-      );
+      const sameAreaUnassigned = riders.filter(rider => {
+        const riderIdNum = getRiderId(rider);
+        return !usedRiderIds.has(riderIdNum) && !rider.driver_id && rider.pickup_area === driver.pickup_area;
+      });
 
       for (const rider of sameAreaUnassigned) {
         if (remainingSeats - rider.seats_needed < 0) break;
         driverMatches.push(rider);
-        usedRiderIds.add(rider.id);
+        usedRiderIds.add(getRiderId(rider));
         remainingSeats -= rider.seats_needed;
         if (remainingSeats === 0) break;
       }
@@ -79,8 +94,13 @@ export function createMatches(drivers: Driver[], riders: Rider[]): { matches: Ma
   }
 
   // Riders left unassigned become unmatched
+  // IMPORTANT: Show ALL riders that don't have a driver_id in the database,
+  // regardless of whether they're in the auto-assignment matches
   for (const rider of riders) {
-    if (!usedRiderIds.has(rider.id) && !rider.driver_id) {
+    const riderDriverId = rider.driver_id ? (typeof rider.driver_id === 'string' ? parseInt(rider.driver_id, 10) : rider.driver_id) : null;
+    
+    // Only show riders that don't have a driver_id set in the database
+    if (!riderDriverId) {
       unmatchedRiders.push({
         ...rider,
         reason: 'No compatible driver found'
