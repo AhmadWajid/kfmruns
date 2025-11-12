@@ -178,6 +178,7 @@ The admin panel is password-protected. Default password is `password` (hashed wi
 To change the admin password:
 1. Generate a new hash: `bcrypt.hashSync('your_new_password', 10)`
 2. Update the `ADMIN_PASSWORD_HASH` environment variable
+or node scripts/generate-password.js "your-new-password"
 
 ## 🚀 Deployment
 
