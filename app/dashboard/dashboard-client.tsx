@@ -101,33 +101,27 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                 return (
                   <Card key={index} className="border-0 shadow-sm bg-blue-50/30">
                     <CardContent className="p-4 relative">
-                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-3 space-y-2 lg:space-y-0 pr-28">
-                        <div className="flex items-center space-x-2 flex-1 min-w-0">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center space-x-1 min-w-0">
-                              <h3 className="font-semibold text-gray-900 truncate text-sm">{match.driver.name}</h3>
+                      <div className="flex flex-col mb-3 space-y-2 pr-20">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-1 min-w-0 mb-1">
+                              <h3 className="font-semibold text-gray-900 text-sm">{match.driver.name}</h3>
                             </div>
-                            <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                              <a href={phoneHref(match.driver.phone_number)} className="font-medium text-blue-700 hover:underline">{formatPhoneNumber(match.driver.phone_number)}</a>
-                              <span className="hidden sm:inline">•</span>
-                              <div className="flex items-center space-x-1">
-                                <span className="truncate">📍 {match.driver.pickup_area}</span>
+                            <div className="flex flex-col space-y-1 text-xs text-gray-600">
+                              <a href={phoneHref(match.driver.phone_number)} className="font-medium text-blue-700 hover:underline whitespace-nowrap">{formatPhoneNumber(match.driver.phone_number)}</a>
+                              <div className="flex items-start space-x-1">
+                                <span className="break-words">📍 {match.driver.pickup_area}</span>
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => window.open(getPickupAreaMapsUrl(match.driver.pickup_area), '_blank')}
-                                  className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                                  className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100 shrink-0 mt-0.5"
                                 >
                                   <MapPin className="h-2 w-2" />
                                 </Button>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex items-center justify-between lg:justify-end space-x-2">
-                          <Badge className="text-xs">
-                            KFM: {formatTime12h(match.driver.leave_kfm_time)} • UCLA: {formatTime12h(match.driver.leave_ucla_time)}
-                          </Badge>
                           <div className="flex items-center space-x-2 absolute top-3 right-3">
                             <Badge 
                               variant="outline" 
@@ -141,6 +135,11 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                             </Badge>
                           </div>
                         </div>
+                        <div className="flex items-center">
+                          <Badge className="text-xs">
+                            KFM: {formatTime12h(match.driver.leave_kfm_time)} • UCLA: {formatTime12h(match.driver.leave_ucla_time)}
+                          </Badge>
+                        </div>
                       </div>
 
                       {match.riders.length > 0 && (
@@ -151,33 +150,34 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                           <div className="space-y-1">
                             {match.riders.map((rider: any, riderIndex: number) => (
                               <div key={riderIndex} className="bg-blue-50 rounded p-2 border border-blue-100 relative">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                                  <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                    <div className="min-w-0 flex-1">
-                                      <div className="flex items-center space-x-1 min-w-0">
-                                        <Users className="h-3 w-3 text-blue-600 shrink-0" />
-                                        <p className="font-medium text-gray-900 truncate text-xs">{rider.name}</p>
-                                      </div>
-                                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                                        <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline">📞 {formatPhoneNumber(rider.phone_number)}</a>
-                                        <span className="hidden sm:inline">•</span>
-                                        <div className="flex items-center space-x-1 truncate">
-                                          <span>📍 {rider.pickup_area}</span>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
-                                            className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
-                                          >
-                                            <MapPin className="h-2 w-2" />
-                                          </Button>
+                                <div className="flex flex-col space-y-2">
+                                  <div className="flex items-start justify-between gap-3">
+                                    <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center space-x-1 mb-1">
+                                          <Users className="h-3 w-3 text-blue-600 shrink-0" />
+                                          <p className="font-medium text-gray-900 text-xs">{rider.name}</p>
                                         </div>
-                                      </div>
-                                      {rider.seats_needed > 1 && (
-                                        <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                                          <span>Seats: {rider.seats_needed}</span>
+                                        <div className="flex flex-col space-y-1 text-xs text-gray-600">
+                                          <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline whitespace-nowrap">📞 {formatPhoneNumber(rider.phone_number)}</a>
+                                          <div className="flex items-start space-x-1">
+                                            <span className="break-words">📍 {rider.pickup_area}</span>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
+                                              className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100 shrink-0 mt-0.5"
+                                            >
+                                              <MapPin className="h-2 w-2" />
+                                            </Button>
+                                          </div>
                                         </div>
-                                      )}
+                                        {rider.seats_needed > 1 && (
+                                          <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                            <span>Seats: {rider.seats_needed}</span>
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -202,41 +202,42 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
               {data.unmatched_riders.map((rider: any, index: number) => (
                 <Card key={index} className="border-0 shadow-sm bg-orange-50/30">
                   <CardContent className="p-3 relative">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0 pr-14">
-                      <div className="flex items-center space-x-2">
-                        <div>
-                          <div className="flex items-center space-x-1">
-                            <Users className="h-4 w-4 text-gray-700" />
-                            <p className="font-medium text-gray-900 text-sm">{rider.name}</p>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                            <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline">📞 {formatPhoneNumber(rider.phone_number)}</a>
-                            <span className="hidden sm:inline">•</span>
-                            <div className="flex items-center space-x-1">
-                              <span>📍 {rider.pickup_area}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
-                                className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
-                              >
-                                <MapPin className="h-2 w-2" />
-                              </Button>
+                    <div className="flex flex-col space-y-2 pr-14">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center space-x-2 flex-1 min-w-0">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-1 mb-1">
+                              <Users className="h-4 w-4 text-gray-700 shrink-0" />
+                              <p className="font-medium text-gray-900 text-sm">{rider.name}</p>
                             </div>
+                            <div className="flex flex-col space-y-1 text-xs text-gray-600">
+                              <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline whitespace-nowrap">📞 {formatPhoneNumber(rider.phone_number)}</a>
+                              <div className="flex items-start space-x-1">
+                                <span className="break-words">📍 {rider.pickup_area}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
+                                  className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100 shrink-0 mt-0.5"
+                                >
+                                  <MapPin className="h-2 w-2" />
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                              <span>Seats: {rider.seats_needed}</span>
+                            </div>
+                            {/* reason hidden on public dashboard */}
                           </div>
-                          <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                            <span>Seats: {rider.seats_needed}</span>
-                          </div>
-                          {/* reason hidden on public dashboard */}
                         </div>
+                        {rider.seats_needed > 1 && (
+                          <div className="flex items-center space-x-2 absolute top-3 right-3">
+                            <Badge variant="outline" className="text-xs text-orange-700 border-orange-300">
+                              {rider.seats_needed} seats
+                            </Badge>
+                          </div>
+                        )}
                       </div>
-                      {rider.seats_needed > 1 && (
-                        <div className="flex items-center space-x-2 absolute top-3 right-3">
-                          <Badge variant="outline" className="text-xs text-orange-700 border-orange-300">
-                            {rider.seats_needed} seats
-                          </Badge>
-                        </div>
-                      )}
                     </div>
                   </CardContent>
                 </Card>

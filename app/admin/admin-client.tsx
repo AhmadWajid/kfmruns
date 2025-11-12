@@ -462,32 +462,26 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                 <Card key={driver.id} className="border-0 shadow-sm bg-blue-50/30">
                   <CardContent className="p-4 relative">
                     {/* Responsive Driver Info */}
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-3 space-y-2 lg:space-y-0 pr-28">
-                      <div className="flex items-center space-x-2 flex-1 min-w-0">
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-semibold text-gray-900 truncate text-sm">{driver.name}</h3>
-                          <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                            <a href={phoneHref(driver.phone_number)} className="font-medium text-blue-700 hover:underline">{formatPhoneNumber(driver.phone_number)}</a>
-                            <span className="hidden sm:inline">•</span>
-                            <div className="flex items-center space-x-1">
-                              <span className="truncate">📍 {driver.pickup_area}</span>
+                    <div className="flex flex-col mb-3 space-y-2 pr-20">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-sm mb-1">{driver.name}</h3>
+                          <div className="flex flex-col space-y-1 text-xs text-gray-600">
+                            <a href={phoneHref(driver.phone_number)} className="font-medium text-blue-700 hover:underline whitespace-nowrap">{formatPhoneNumber(driver.phone_number)}</a>
+                            <div className="flex items-start space-x-1">
+                              <span className="break-words">📍 {driver.pickup_area}</span>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => window.open(getPickupAreaMapsUrl(driver.pickup_area), '_blank')}
-                                className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                                className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100 shrink-0 mt-0.5"
                               >
                                 <MapPin className="h-2 w-2" />
                               </Button>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center justify-between lg:justify-end space-x-2">
-                        <Badge className="text-xs">
-                          KFM: {formatTime12h(driver.leave_kfm_time)} • UCLA: {formatTime12h(driver.leave_ucla_time)}
-                        </Badge>
-                        <div className="flex items-center space-x-2 absolute top-3 right-12">
+                        <div className="flex items-center space-x-2 absolute top-3 right-3">
                           <Badge 
                             variant="outline" 
                             className={`text-xs ${totalPeople > totalCapacity 
@@ -498,16 +492,21 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                             {totalPeople}/{totalCapacity}
                             {totalPeople > totalCapacity && " ⚠️"}
                           </Badge>
+                          <Button
+                            onClick={() => handleDeleteDriver(driver.id)}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
+                            title="Delete Driver"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
                         </div>
-                        <Button
-                          onClick={() => handleDeleteDriver(driver.id)}
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 absolute top-3 right-3"
-                          title="Delete Driver"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                      </div>
+                      <div className="flex items-center">
+                        <Badge className="text-xs">
+                          KFM: {formatTime12h(driver.leave_kfm_time)} • UCLA: {formatTime12h(driver.leave_ucla_time)}
+                        </Badge>
                       </div>
                     </div>
 
@@ -527,20 +526,19 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                         <div className="space-y-1">
                           {assignedRiders.map((rider) => (
                             <div key={rider.id} className="bg-blue-50 rounded p-2 border border-blue-100 relative">
-                              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
-                                <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                  <div className="min-w-0 flex-1">
-                                    <p className="font-medium text-gray-900 truncate text-xs">{rider.name}</p>
-                                    <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                                      <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline">📞 {formatPhoneNumber(rider.phone_number)}</a>
-                                      <span className="hidden sm:inline">•</span>
-                                      <div className="flex items-center space-x-1 truncate">
-                                        <span>📍 {rider.pickup_area}</span>
+                              <div className="flex flex-col space-y-2 pr-16">
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-gray-900 text-xs mb-1">{rider.name}</p>
+                                    <div className="flex flex-col space-y-1 text-xs text-gray-600">
+                                      <a href={phoneHref(rider.phone_number)} className="font-medium text-blue-700 hover:underline whitespace-nowrap">📞 {formatPhoneNumber(rider.phone_number)}</a>
+                                      <div className="flex items-start space-x-1">
+                                        <span className="break-words">📍 {rider.pickup_area}</span>
                                         <Button
                                           variant="ghost"
                                           size="sm"
                                           onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
-                                          className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
+                                          className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100 shrink-0 mt-0.5"
                                         >
                                           <MapPin className="h-2 w-2" />
                                         </Button>
@@ -557,26 +555,26 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                                       </div>
                                     )}
                                   </div>
-                                </div>
-                                <div className="flex items-center space-x-1 shrink-0 absolute top-2 right-2">
-                                  <Button
-                                    onClick={() => handleMoveRider(rider.id)}
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-6 w-6 p-0"
-                                    title="Move to different driver"
-                                  >
-                                    <ArrowRightLeft className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    onClick={() => handleRemoveRider(rider.id)}
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
-                                    title="Remove from driver"
-                                  >
-                                    <UserMinus className="h-3 w-3" />
-                                  </Button>
+                                  <div className="flex items-center space-x-1 shrink-0 absolute top-2 right-2">
+                                    <Button
+                                      onClick={() => handleMoveRider(rider.id)}
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-6 w-6 p-0"
+                                      title="Move to different driver"
+                                    >
+                                      <ArrowRightLeft className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      onClick={() => handleRemoveRider(rider.id)}
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
+                                      title="Remove from driver"
+                                    >
+                                      <UserMinus className="h-3 w-3" />
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -601,55 +599,56 @@ export default function AdminClient({ initialData }: AdminClientProps) {
               {data.unmatched_riders.map((rider) => (
                 <Card key={rider.id} className="border-0 shadow-sm bg-orange-50/30">
                   <CardContent className="p-3 relative">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
-                      <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4 text-gray-700" />
-                        <div>
-                          <p className="font-medium text-gray-900 text-sm">{rider.name}</p>
-                          <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs text-gray-600">
-                            <span className="font-medium">📞 {formatPhoneNumber(rider.phone_number)}</span>
-                            <span className="hidden sm:inline">•</span>
-                            <div className="flex items-center space-x-1">
-                              <span>📍 {rider.pickup_area}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
-                                className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100"
-                              >
-                                <MapPin className="h-2 w-2" />
-                              </Button>
+                    <div className="flex flex-col space-y-2 pr-20">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center space-x-2 flex-1 min-w-0">
+                          <Users className="h-4 w-4 text-gray-700 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 text-sm mb-1">{rider.name}</p>
+                            <div className="flex flex-col space-y-1 text-xs text-gray-600">
+                              <span className="font-medium whitespace-nowrap">📞 {formatPhoneNumber(rider.phone_number)}</span>
+                              <div className="flex items-start space-x-1">
+                                <span className="break-words">📍 {rider.pickup_area}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => window.open(getPickupAreaMapsUrl(rider.pickup_area), '_blank')}
+                                  className="h-3 w-3 p-0 text-blue-600 hover:bg-blue-100 shrink-0 mt-0.5"
+                                >
+                                  <MapPin className="h-2 w-2" />
+                                </Button>
+                              </div>
                             </div>
+                            {rider.seats_needed > 1 && (
+                              <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                <span>Seats: {rider.seats_needed}</span>
+                              </div>
+                            )}
+                            {rider.notes && (
+                              <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800 wrap-break-word border border-blue-100">{rider.notes}</div>
+                            )}
                           </div>
-                          {rider.seats_needed > 1 && (
-                            <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                              <span>Seats: {rider.seats_needed}</span>
-                            </div>
-                          )}
-                          {rider.notes && (
-                            <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-800 wrap-break-word border border-blue-100">{rider.notes}</div>
-                          )}
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          onClick={() => handleAssignRider(rider.id)}
-                          variant="outline"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-6 w-6 p-0 absolute top-3 right-10"
-                          title="Assign to driver"
-                        >
-                          <Users className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteRider(rider.id)}
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 absolute top-3 right-3"
-                          title="Delete rider"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex items-center space-x-2 absolute top-3 right-3">
+                          <Button
+                            onClick={() => handleAssignRider(rider.id)}
+                            variant="outline"
+                            size="sm"
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-6 w-6 p-0"
+                            title="Assign to driver"
+                          >
+                            <Users className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteRider(rider.id)}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
+                            title="Delete rider"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
