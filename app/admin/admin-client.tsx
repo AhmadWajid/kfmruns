@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, LogOut, RefreshCw, Trash2, Car, Users, MapPin, X, ArrowRightLeft, UserMinus } from 'lucide-react';
+import { Lock, LogOut, RefreshCw, Trash2, Car, Users, MapPin, X, ArrowRightLeft, UserMinus, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -36,6 +36,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
   const [moveDriverId, setMoveDriverId] = useState<string>('');
   const [showClearModal, setShowClearModal] = useState(false);
   const [isFinalized, setIsFinalized] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -328,6 +329,45 @@ export default function AdminClient({ initialData }: AdminClientProps) {
     }
   };
 
+  const formatDataForGroupChat = (): string => {
+    let text = '';
+    
+    data.drivers.forEach((driver) => {
+      const assignedRiders = data.riders.filter(rider => rider.driver_id === driver.id);
+      
+      // Driver info
+      text += `🚗 ${driver.name}\n`;
+      text += `📍 ${driver.pickup_area}\n`;
+      text += `⏰ KFM: ${formatTime12h(driver.leave_kfm_time)} • UCLA: ${formatTime12h(driver.leave_ucla_time)}\n`;
+      
+      // Riders
+      if (assignedRiders.length > 0) {
+        text += `\nPassengers:\n`;
+        assignedRiders.forEach((rider) => {
+          text += `- ${rider.name}\n`;
+        });
+      } else {
+        text += `\nNo passengers assigned\n`;
+      }
+      
+      text += `\n${'─'.repeat(30)}\n\n`;
+    });
+    
+    return text.trim();
+  };
+
+  const handleCopyToClipboard = async () => {
+    try {
+      const text = formatDataForGroupChat();
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      alert('Failed to copy to clipboard');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
@@ -447,9 +487,29 @@ export default function AdminClient({ initialData }: AdminClientProps) {
 
         {/* Compact All Drivers Section */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            🚗 All Drivers ({data.drivers.length})
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+              🚗 All Drivers ({data.drivers.length})
+            </h2>
+            <Button
+              onClick={handleCopyToClipboard}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4" />
+                  Copy All
+                </>
+              )}
+            </Button>
+          </div>
           <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
             {data.drivers.map((driver) => {
               const assignedRiders = data.riders.filter(rider => rider.driver_id === driver.id);
