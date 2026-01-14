@@ -1,7 +1,7 @@
 'use server';
 
 import { supabase } from '@/lib/supabase';
-import { createMatches, getDashboardStats } from '@/lib/utils';
+import { getDashboardStats } from '@/lib/utils';
 import { DashboardData } from '@/types/api';
 
 export async function getAppState(): Promise<{ is_finalized: boolean }> {
@@ -44,17 +44,47 @@ export async function getDashboardData(): Promise<DashboardData> {
     const drivers = driversResult.data || [];
     const riders = ridersResult.data || [];
 
-    // Create matches using the smart matching algorithm
-    const { matches, unmatchedRiders } = createMatches(drivers, riders);
+    // Create matches for ALL drivers, but only include riders that have been manually assigned (have driver_id set)
+    // This ensures all drivers are shown, even if they have no assigned riders yet
+    const confirmedMatches = drivers.map(driver => {
+      const driverIdNum = typeof driver.id === 'string' ? parseInt(driver.id, 10) : driver.id;
+      
+      // Only include riders that have this driver's ID set in the database
+      const assignedRiders = riders.filter(rider => {
+        const riderDriverId = rider.driver_id ? (typeof rider.driver_id === 'string' ? parseInt(rider.driver_id, 10) : rider.driver_id) : null;
+        return riderDriverId === driverIdNum;
+      });
 
-    // Get dashboard statistics
-    const stats = getDashboardStats(drivers, riders, matches, unmatchedRiders);
+      const usedSeats = assignedRiders.reduce((sum, rider) => sum + rider.seats_needed, 0);
+      const remainingSeats = Math.max(0, driver.seats_available - usedSeats);
+
+      return {
+        driver,
+        riders: assignedRiders,
+        total_seats_used: usedSeats,
+        remaining_seats: remainingSeats
+      };
+    });
+
+    // Recalculate unmatched riders - only show riders without driver_id
+    const confirmedUnmatchedRiders = riders
+      .filter(rider => {
+        const riderDriverId = rider.driver_id ? (typeof rider.driver_id === 'string' ? parseInt(rider.driver_id, 10) : rider.driver_id) : null;
+        return !riderDriverId;
+      })
+      .map(rider => ({
+        ...rider,
+        reason: 'No compatible driver found'
+      }));
+
+    // Get dashboard statistics using confirmed matches
+    const stats = getDashboardStats(drivers, riders, confirmedMatches, confirmedUnmatchedRiders);
 
     const dashboardData: DashboardData = {
       drivers,
       riders,
-      matches,
-      unmatched_riders: unmatchedRiders,
+      matches: confirmedMatches,
+      unmatched_riders: confirmedUnmatchedRiders,
       ...stats
     };
 
