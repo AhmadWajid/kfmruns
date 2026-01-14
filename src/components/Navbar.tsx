@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Car, Users, BarChart3, LogOut, Menu, X } from 'lucide-react';
+import { Car, Users, List, LogOut, Menu, X, Lock } from 'lucide-react';
 
 interface NavbarProps {
   currentPage?: string;
@@ -54,21 +54,33 @@ export default function Navbar({ currentPage = 'home' }: NavbarProps) {
 
   return (
     <header className="fixed z-50 w-full flex flex-col items-stretch">
-      <div className="flex z-1 justify-between items-center w-full transition duration-200 px-4 md:px-6 bg-msa-blue shadow-md">
+      <div className="flex z-1 justify-between items-center w-full transition duration-200 px-4 md:px-6 bg-msa-blue shadow-lg border-b-2 border-msa-yellow/30">
         {/* Logo */}
-        <Link href="/" className="flex py-3 gap-2 items-center min-w-0">
-          <div className="text-2xl">🕌</div>
-          <h1 className="text-2xl md:text-4xl text-msa-yellow font-bold truncate">UCLA MSA</h1>
+        <Link href="/" className="flex py-3 gap-3 items-center min-w-0 hover:opacity-90 transition-opacity">
+          <img 
+            src="/uclabrothers.jpg" 
+            alt="UCLA Brothers Logo" 
+            className="h-10 w-10 md:h-12 md:w-12 rounded-full object-cover border-2 border-msa-yellow"
+            onError={(e) => {
+              // Fallback to emoji if image doesn't exist
+              e.currentTarget.style.display = 'none';
+              const fallback = document.createElement('div');
+              fallback.className = 'text-2xl';
+              fallback.textContent = '🕌';
+              e.currentTarget.parentNode?.insertBefore(fallback, e.currentTarget);
+            }}
+          />
+          <h1 className="text-xl md:text-3xl text-msa-yellow font-bold truncate">UCLA Brothers</h1>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-3">
+        <nav className="hidden md:flex items-center gap-3" aria-label="Main navigation">
           <Link href="/driver">
             <Button 
               variant="outline" 
-              size="sm" 
-              className={`border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue ${
-                currentPage === 'driver' ? 'bg-msa-yellow text-msa-blue' : ''
+              size="default" 
+              className={`border-2 border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue font-semibold transition-all ${
+                currentPage === 'driver' ? 'bg-msa-yellow text-msa-blue shadow-md' : ''
               }`}
             >
               <Car className="mr-2 h-4 w-4" />
@@ -79,9 +91,9 @@ export default function Navbar({ currentPage = 'home' }: NavbarProps) {
           <Link href="/rider">
             <Button 
               variant="outline" 
-              size="sm" 
-              className={`border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue ${
-                currentPage === 'rider' ? 'bg-msa-yellow text-msa-blue' : ''
+              size="default" 
+              className={`border-2 border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue font-semibold transition-all ${
+                currentPage === 'rider' ? 'bg-msa-yellow text-msa-blue shadow-md' : ''
               }`}
             >
               <Users className="mr-2 h-4 w-4" />
@@ -92,13 +104,13 @@ export default function Navbar({ currentPage = 'home' }: NavbarProps) {
           <Link href="/dashboard">
             <Button 
               variant="outline" 
-              size="sm" 
-              className={`border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue ${
-                currentPage === 'dashboard' ? 'bg-msa-yellow text-msa-blue' : ''
+              size="default" 
+              className={`border-2 border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue font-semibold transition-all ${
+                currentPage === 'dashboard' ? 'bg-msa-yellow text-msa-blue shadow-md' : ''
               }`}
             >
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Dashboard
+              <List className="mr-2 h-4 w-4" />
+              View Rides
             </Button>
           </Link>
 
@@ -130,25 +142,19 @@ export default function Navbar({ currentPage = 'home' }: NavbarProps) {
               </Button>
             </div>
           ) : (
-            <Link href="/admin">
-              <Button variant="outline" size="sm" className="border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue">
-                Admin Login
+            <Link href="/admin" title="Admin Login">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-msa-yellow text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue p-2"
+              >
+                <Lock className="h-4 w-4" />
               </Button>
             </Link>
           )}
+        </nav>
 
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleMobileMenu}
-            className="md:hidden text-msa-yellow hover:bg-msa-yellow hover:text-msa-blue"
-          >
-            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
-
-        {/* Mobile menu button (when desktop nav is hidden) */}
+        {/* Mobile menu button */}
         <div className="md:hidden flex items-center">
           <Button
             variant="ghost"
@@ -199,8 +205,8 @@ export default function Navbar({ currentPage = 'home' }: NavbarProps) {
                   currentPage === 'dashboard' ? 'bg-msa-yellow text-msa-blue' : ''
                 }`}
               >
-                <BarChart3 className="mr-2 h-4 w-4" />
-                Dashboard
+                <List className="mr-2 h-4 w-4" />
+                View Rides
               </Button>
             </Link>
 

@@ -14,22 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UCLA MSA - Thursday Isha Ride Matching",
-  description: "UCLA Thursday Isha prayer rides to King Fahad Mosque. Find drivers and riders for convenient transportation.",
-  keywords: "UCLA, MSA, Muslim, ride sharing, transportation, King Fahad Mosque, Isha prayer",
-  authors: [{ name: "UCLA Muslim Student Association" }],
+  title: "UCLA Brothers - Isha Ride Matching",
+  description: "UCLA Isha prayer rides to King Fahad Mosque. Find drivers and riders for convenient transportation.",
+  keywords: "UCLA, Brothers, Muslim, ride sharing, transportation, King Fahad Mosque, Isha prayer",
+  authors: [{ name: "UCLA Brothers" }],
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover",
   openGraph: {
     url: "https://kfmruns.netlify.app",
     type: "website",
-    title: "UCLA MSA - Isha Ride Matching",
+    title: "UCLA Brothers - Isha Ride Matching",
     description: "UCLA Isha prayer rides to King Fahad Mosque. Find drivers and riders for convenient transportation.",
     images: [
       {
         url: "https://opengraph.b-cdn.net/production/images/772e43a7-89d8-4749-9ab3-f68a4f8e9171.png?token=BMRLIqLB6p1iUNAztv7QgNu4vzsomGz2HAdkegdfCDQ&height=681&width=1200&expires=33297240693",
         width: 1200,
         height: 626,
-        alt: "UCLA MSA - Isha Ride Matching",
+        alt: "UCLA Brothers - Isha Ride Matching",
       },
     ],
   },
