@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   keywords: "UCLA, Brothers, Muslim, ride sharing, transportation, King Fahad Mosque, Isha prayer",
   authors: [{ name: "UCLA Brothers" }],
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover",
+  icons: {
+    icon: '/uclabrothers.ico',
+    apple: '/uclabrothers.ico',
+  },
   openGraph: {
     url: "https://kfmruns.netlify.app",
     type: "website",
