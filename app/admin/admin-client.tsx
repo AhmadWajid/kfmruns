@@ -338,7 +338,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
       // Driver info
       text += `🚗 ${driver.name}\n`;
       text += `📍 ${driver.pickup_area}\n`;
-      text += `⏰ KFM: ${formatTime12h(driver.leave_kfm_time)} • UCLA: ${formatTime12h(driver.leave_ucla_time)}\n`;
+      text += `⏰ UCLA: ${formatTime12h(driver.leave_ucla_time)} • KFM: ${formatTime12h(driver.leave_kfm_time)}\n`;
       
       // Riders
       if (assignedRiders.length > 0) {
@@ -565,7 +565,7 @@ export default function AdminClient({ initialData }: AdminClientProps) {
                       </div>
                       <div className="flex items-center">
                         <Badge className="text-xs">
-                          KFM: {formatTime12h(driver.leave_kfm_time)} • UCLA: {formatTime12h(driver.leave_ucla_time)}
+                          UCLA: {formatTime12h(driver.leave_ucla_time)} • KFM: {formatTime12h(driver.leave_kfm_time)}
                         </Badge>
                       </div>
                     </div>

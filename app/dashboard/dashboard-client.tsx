@@ -137,7 +137,7 @@ export default function DashboardClient({ initialData }: DashboardClientProps) {
                         </div>
                         <div className="flex items-center">
                           <Badge className="text-xs">
-                            KFM: {formatTime12h(match.driver.leave_kfm_time)} • UCLA: {formatTime12h(match.driver.leave_ucla_time)}
+                            UCLA: {formatTime12h(match.driver.leave_ucla_time)} • KFM: {formatTime12h(match.driver.leave_kfm_time)}
                           </Badge>
                         </div>
                       </div>
